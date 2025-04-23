@@ -1,6 +1,11 @@
-# Modified NFL QB Analysis Script with Team Win-Loss Integration
 # This script analyzes NFL QB performance with a focus on Yards After Catch (YAC)
 # and its relationship with salary, other performance metrics, and team success
+
+setwd("C:/nfl_git")
+
+install.packages(c("nflreadr", "nflfastR", "tidyverse", "ggrepel", "viridis", 
+                   "broom", "corrplot", "knitr"))
+
 
 # Load required packages
 library(nflreadr)    # For loading NFL data
@@ -166,7 +171,7 @@ write_csv(all_qb_data, "qb_team_metrics_2019_2024_new.csv")
 print(paste("Added team win-loss data to QB metrics"))
 
 # 3. ADD SALARY DATA
-salary_file_path <- "C:/Users/Jmaddox/Downloads/nfl_qb_salaries_cleaned_2019_2024.csv"
+salary_file_path <- "nfl_qb_salaries_cleaned_2019_2024.csv"
 
 if(file.exists(salary_file_path)) {
   print("Adding salary data to analysis...")
@@ -246,7 +251,7 @@ summary_stats <- all_qb_data %>%
   )
 
 # Print summary table
-print("NFL QB Overall Performance Summary (2019-2023):")
+print("NFL QB Overall Performance Summary (2019-2024):")
 print(summary_stats)
 
 # Yearly trends with team success
@@ -334,7 +339,7 @@ p_yac_trend <- ggplot(yearly_trends, aes(x = season)) +
   geom_point(aes(y = avg_air_pct, color = "Air Yards %"), size = 3) +
   scale_color_manual(values = c("YAC %" = "#1F77B4", "Air Yards %" = "#FF7F0E")) +
   labs(
-    title = "Evolution of NFL QB Passing Metrics (2019-2023)",
+    title = "Evolution of NFL QB Passing Metrics (2019-2024)",
     subtitle = "League-wide trends in YAC vs Air Yards percentages",
     x = "Season",
     y = "Percentage (%)",
@@ -351,7 +356,7 @@ p_epa_trend <- ggplot(yearly_trends, aes(x = season)) +
   geom_point(aes(y = avg_yac_epa, color = "YAC EPA"), size = 3) +
   scale_color_manual(values = c("Total EPA" = "#2CA02C", "Air EPA" = "#D62728", "YAC EPA" = "#9467BD")) +
   labs(
-    title = "QB Efficiency Trends (2019-2023)",
+    title = "QB Efficiency Trends (2019-2024)",
     subtitle = "Changes in Expected Points Added components over time",
     x = "Season",
     y = "EPA per Attempt",
@@ -707,7 +712,7 @@ p_case_studies <- ggplot(top_bottom_qbs, aes(x = avg_yac_pct, y = avg_air_pct)) 
   ) +
   labs(
     title = "Case Studies: QB Passing Style and Team Success",
-    subtitle = "Top and bottom QBs by win percentage (2019-2023)",
+    subtitle = "Top and bottom QBs by win percentage (2019-2024)",
     x = "YAC Percentage",
     y = "Air Yards Percentage",
     color = "Win Percentage",

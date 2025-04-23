@@ -35,6 +35,5 @@ This project analyzes the value of NFL quarterbacks by integrating performance s
 
 ---
 
-## 📁 Project Structure
 
 

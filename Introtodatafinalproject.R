@@ -368,7 +368,7 @@ ggsave("qb_yac_air_trends_new.png", p_yac_trend, width = 10, height = 6, dpi = 3
 ggsave("qb_epa_trends_new.png", p_epa_trend, width = 10, height = 6, dpi = 300)
 
 # 6.2 Win percentage visualizations
-# YAC percentage vs Win percentage
+# Improve YAC vs. Wins plot legend
 p_yac_wins <- ggplot(success_correlation, aes(x = yac_percentage, y = win_pct)) +
   geom_point(aes(color = epa_per_attempt, size = games_played), alpha = 0.7) +
   geom_smooth(method = "lm", se = TRUE, color = "grey30", linetype = "dashed") +
@@ -390,9 +390,19 @@ p_yac_wins <- ggplot(success_correlation, aes(x = yac_percentage, y = win_pct)) 
     y = "Win Percentage",
     color = "EPA per Attempt",
     size = "Games Played"
+  ) +
+  # Improve legend visibility
+  theme(
+    legend.background = element_rect(fill = "white", color = "gray80"),
+    legend.key = element_rect(fill = "white"),
+    legend.position = "right",
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.box.margin = margin(t = 0, r = 0, b = 0, l = 10)
   )
 
 # Air yards percentage vs Win percentage
+# Improve Air Yards vs. Wins plot legend
 p_air_wins <- ggplot(success_correlation, aes(x = air_yards_percentage, y = win_pct)) +
   geom_point(aes(color = epa_per_attempt, size = games_played), alpha = 0.7) +
   geom_smooth(method = "lm", se = TRUE, color = "grey30", linetype = "dashed") +
@@ -414,9 +424,19 @@ p_air_wins <- ggplot(success_correlation, aes(x = air_yards_percentage, y = win_
     y = "Win Percentage",
     color = "EPA per Attempt",
     size = "Games Played"
+  ) +
+  # Improve legend visibility
+  theme(
+    legend.background = element_rect(fill = "white", color = "gray80"),
+    legend.key = element_rect(fill = "white"),
+    legend.position = "right",
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.box.margin = margin(t = 0, r = 0, b = 0, l = 10)
   )
 
 # Combined EPA breakdown by win percentage
+# Improve EPA Components by Win Percentage legend
 p_epa_components_wins <- success_correlation %>%
   mutate(
     win_group = cut(win_pct, 
@@ -462,15 +482,28 @@ p_epa_components_wins <- success_correlation %>%
     y = "EPA per Attempt",
     fill = "EPA Component"
   ) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    # Improve legend visibility
+    legend.background = element_rect(fill = "white", color = "gray80"),
+    legend.key = element_rect(fill = "white"),
+    legend.position = "top",
+    legend.text = element_text(size = 10),
+    legend.title = element_text(size = 11, face = "bold")
+  )
 
-# Save win percentage visualizations
+# Save improved visualizations
 ggsave("yac_vs_wins_new.png", p_yac_wins, width = 10, height = 7, dpi = 300)
 ggsave("air_yards_vs_wins_new.png", p_air_wins, width = 10, height = 7, dpi = 300)
 ggsave("epa_components_by_win_pct_new.png", p_epa_components_wins, width = 12, height = 7, dpi = 300)
-print("Saved team success visualizations")
+ggsave("qb_style_success_new.png", p_style_success, width = 10, height = 6, dpi = 300)
+ggsave("qb_case_studies_new.png", p_case_studies, width = 10, height = 8, dpi = 300)
+print("Saved all visualizations with improved legends")
 
 # 6.3 Create correlation matrix
+# Alternative approach to fix the correlation matrix labels
+
+# First, rename the columns of the data frame before calculating correlations
 qb_cor_vars <- all_qb_data %>%
   select(
     win_pct, completion_pct, yards_per_attempt, td_pct, int_pct,
@@ -478,17 +511,64 @@ qb_cor_vars <- all_qb_data %>%
     mean_cpoe, deep_pass_pct, third_down_success
   )
 
-# Calculate correlations
+# Rename the columns directly in the data frame
+names(qb_cor_vars) <- c(
+  "Win %", "Completion %", "Yards/Attempt", "TD %", "INT %",
+  "YAC %", "Air Yards %", "EPA/Attempt", 
+  "Mean CPOE", "Deep Pass %", "3rd Down %"
+)
+
+# Now calculate correlations - the matrix will inherit these column names
 qb_cors <- cor(qb_cor_vars, use = "pairwise.complete.obs")
 
-# Create correlation plot
-png("qb_win_correlation_matrix_new.png", width = 10, height = 8, units = "in", res = 300)
-corrplot(qb_cors, method = "color", type = "upper", tl.col = "black", 
-         tl.srt = 45, addCoef.col = "black", number.cex = 0.7,
+# Create correlation plot without specifying tl.labels
+# (it will use the column names from qb_cors)
+png("qb_win_correlation_matrix_fixed.png", width = 10, height = 8, units = "in", res = 300)
+corrplot(qb_cors, method = "color", type = "upper", 
+         tl.col = "black", tl.srt = 45, 
+         addCoef.col = "black", number.cex = 0.7,
          title = "Correlation Matrix of QB Performance Metrics",
-         mar = c(0,0,2,0))
+         mar = c(0,0,2,0),
+         tl.cex = 0.8)
 dev.off()
-print("Saved correlation matrix visualization")
+print("Saved corrected correlation matrix visualization")
+
+# Alternative method using corrplot.mixed for better visibility
+png("qb_win_correlation_matrix_mixed.png", width = 10, height = 8, units = "in", res = 300)
+corrplot.mixed(qb_cors, 
+               upper = "color", 
+               lower = "number",
+               tl.col = "black", 
+               tl.pos = "lt",
+               tl.cex = 0.8,
+               number.cex = 0.7,
+               title = "Correlation Matrix of QB Performance Metrics",
+               mar = c(0,0,2,0))
+dev.off()
+print("Saved alternative correlation matrix visualization")
+
+# Using base R method as another alternative
+png("qb_win_correlation_heatmap.png", width = 10, height = 8, units = "in", res = 300)
+# Set up the plotting area
+par(mar = c(5, 5, 3, 1))
+# Plot the correlation matrix using base R
+image(1:ncol(qb_cors), 1:nrow(qb_cors), t(qb_cors), 
+      col = colorRampPalette(c("navy", "white", "firebrick"))(100),
+      xlab = "", ylab = "", axes = FALSE,
+      main = "Correlation Matrix of QB Performance Metrics")
+# Add the labels
+axis(1, 1:ncol(qb_cors), colnames(qb_cors), las = 2, cex.axis = 0.8)
+axis(2, 1:nrow(qb_cors), rownames(qb_cors), las = 2, cex.axis = 0.8)
+# Add correlation values as text
+for (i in 1:nrow(qb_cors)) {
+  for (j in 1:ncol(qb_cors)) {
+    if (i >= j) { # Only show lower triangle
+      text(j, i, round(qb_cors[i, j], 2), cex = 0.7)
+    }
+  }
+}
+dev.off()
+print("Saved base R correlation heatmap")
 
 # 7. SALARY ANALYSIS (if data available)
 if(exists("qb_analysis_data") && "salary_millions" %in% names(qb_analysis_data)) {
@@ -635,6 +715,7 @@ write_csv(qb_style_success, "qb_style_success_table_new.csv")
 print("Saved QB style success analysis")
 
 # Create a visualization of QB styles and success
+# Fix 2: QB Style Success plot - improve legend visibility
 p_style_success <- qb_style_success %>%
   ggplot(aes(x = reorder(qb_style, avg_win_pct), y = avg_win_pct)) +
   geom_col(aes(fill = avg_epa), width = 0.7) +
@@ -658,7 +739,13 @@ p_style_success <- qb_style_success %>%
   ) +
   theme(
     legend.position = "bottom",
-    panel.grid.major.y = element_blank()
+    panel.grid.major.y = element_blank(),
+    # Improve legend visibility
+    legend.background = element_rect(fill = "white", color = "gray80"),
+    legend.key.width = unit(1.5, "cm"),
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 10, face = "bold"),
+    legend.margin = margin(t = 5, r = 5, b = 5, l = 5)
   )
 
 # Save style success visualization
@@ -698,6 +785,7 @@ top_bottom_qbs <- bind_rows(
 )
 
 # Create comparative visualization
+# Fix 1: Case Studies plot - improve legend visibility
 p_case_studies <- ggplot(top_bottom_qbs, aes(x = avg_yac_pct, y = avg_air_pct)) +
   geom_point(aes(color = avg_win_pct, size = avg_epa), alpha = 0.8) +
   geom_text_repel(
@@ -717,6 +805,14 @@ p_case_studies <- ggplot(top_bottom_qbs, aes(x = avg_yac_pct, y = avg_air_pct)) 
     y = "Air Yards Percentage",
     color = "Win Percentage",
     size = "EPA per Attempt"
+  ) +
+  # Add these theme elements to improve legend visibility
+  theme(
+    legend.background = element_rect(fill = "white", color = "gray80"),
+    legend.key = element_rect(fill = "white"),
+    legend.position = "right",
+    legend.text = element_text(size = 9),
+    legend.title = element_text(size = 10, face = "bold")
   )
 
 # Save case studies visualization
